@@ -1,5 +1,4 @@
 package code;
-
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -1023,16 +1022,18 @@ public class Matrix {
 
         boolean drop = false;
         for (int i = 0; i < hostagesX.length; i++) {
-            if (neoPositionX == hostagesX[i] && neoPositionY == hostagesY[i]) {
+            if (neoPositionX == telephoneX && neoPositionY == telephoneY) {
                 if (hostagesCarried[i]) {
-                    if (hostagesX[i] == telephoneX && hostagesY[i] == telephoneY) {
-                        carryCount--;
-                        currentHostages--;
-                        hostagesCarried[i] = false;
-                        drop = true;
+                    // if (hostagesX[i] == telephoneX && hostagesY[i] == telephoneY) {
+                    carryCount--;
+                    currentHostages--;
+                    hostagesX[i]=telephoneX;
+                    hostagesY[i]=telephoneY;
+                    hostagesCarried[i] = false;
+                    drop = true;
 
-                    }
                 }
+                // }
             }
         }
         if (drop) {
@@ -1608,7 +1609,7 @@ public class Matrix {
 
         // solve(grid1, "BFS", false);
         // System.out.println("hi");
-        String out = solve(grid1, "BF", false);
+        String out = solve(grid5, "BF", false);
         System.out.println(out);
 
         // }
