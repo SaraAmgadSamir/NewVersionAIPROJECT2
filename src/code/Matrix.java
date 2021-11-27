@@ -553,7 +553,9 @@ public class Matrix {
     public static Pair addDmg(int[] hostageDmg, boolean[] hostageAgent, boolean[] carried, int[] hostageX,
             int[] hostageY, int telephoneX, int telephoneY, boolean[] hostageAgentKilled) {
         for (int i = 0; i < hostageY.length; i++) {
-            hostageDmg[i] += 2;
+            if (!(hostageX[i] == telephoneX && hostageY[i] == telephoneY)) {
+                hostageDmg[i] += 2;
+            }
             if (hostageDmg[i] >= 100) {
                 hostageDmg[i] = 100;
                 if (!carried[i] && !(hostageX[i] == telephoneX && hostageY[i] == telephoneY)) {
@@ -1328,7 +1330,11 @@ public class Matrix {
             }
         }
         return "" + getNeoX(x) + getNeoY(x) + getNeoDmg(x) + numberOfAgents + currentHostages + numberOfCarriedHostages
-                + availablePills;
+                + availablePills
+                +Arrays.toString(getPillsTaken(x));
+                // +Arrays.toString(getAgentDead(x))
+                // +Arrays.toString(getHostageAgentKilled(x));
+
         // + Arrays.toString(getHostagesDmg(x));
 
     }
@@ -1504,23 +1510,213 @@ public class Matrix {
                 }
             }
 
-            for (int dead : hostagesDmg) {
-                if (dead == 100) {
-                    death++;
+            for (int i = 0; i < hostagesDmg.length; i++) {
+                // if (!hostageAgentKilled[i]) {
+                    if (hostagesDmg[i] == 100) {
+                        death++;
+                    // }
                 }
+
             }
             while (parent.action != "root") {
                 out = "," + parent.action + out;
                 parent = parent.parent;
             }
             out = out.substring(1);
+            // death--;
             out += ";" + death + ";" + kills + ";" + counter;
         }
         return out;
     }
 
-    public static void dfs() {
+    public static String dfs(Stack<MyTreeNode> queue) {
+        String root = queue.peek().currentState;
+        HashSet<String> hash = new HashSet<>();
+        int currentHostages;
+        int neoPositionX;
+        int neoPositionY;
+        int telephoneX;
+        int telephoneY;
+        String x = "";
+        MyTreeNode parent;
+        boolean done = false;
+        boolean noSol = false;
+        do {
+            // increment the counter to count the branches of the search
+            counter++;
+            // remove first node from queu
+            parent = queue.pop();
+            x = parent.currentState;
+            hash.add(newHash(x));
+            /////////////////////////////////////////////////////////////////////////////////
+            neoPositionX = getNeoX(x);
+            neoPositionY = getNeoY(x);
+            telephoneX = getTelephoneX(x);
+            telephoneY = getTelephoneY(x);
+            currentHostages = getCurrentHostages(x);
+            // System.out.println(currentHostages);
+            int neoDmg = getNeoDmg(x);
+            /////////////////////////////////////////////////////////////////////////////////
+            // up
+            if (neoDmg < 100) {
+                // System.out.println(counter);
+                String newState = up(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("UP: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        MyTreeNode tree = new MyTreeNode(newState, parent, "up");
+                        queue.add(tree);
 
+                    }
+                }
+                // down
+                newState = down(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("Down: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        // System.out.println("Test"+Arrays.toString(getHostagesX(newState))+"vs"+Arrays.toString(getHostagesX(x)));
+                        hash.add(newHash(newState));
+                        MyTreeNode tree = new MyTreeNode(newState, parent, "down");
+                        queue.add(tree);
+
+                    }
+                }
+                // left
+                newState = left(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("LEFT: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        MyTreeNode tree = new MyTreeNode(newState, parent, "left");
+                        queue.add(tree);
+
+                    }
+                }
+                // right
+                newState = right(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("RIGHT: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        MyTreeNode tree = new MyTreeNode(newState, parent, "right");
+                        queue.add(tree);
+
+                    }
+                }
+                // carry
+                newState = carry(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("CARRY: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        MyTreeNode tree = new MyTreeNode(newState, parent, "carry");
+                        queue.add(tree);
+
+                    }
+                }
+                // drop
+                newState = drop(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("DROP: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        MyTreeNode tree = new MyTreeNode(newState, parent, "drop");
+                        queue.add(tree);
+
+                    }
+                }
+                // takepill
+                newState = takePill(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("TAKEPILL: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        MyTreeNode tree = new MyTreeNode(newState, parent, "takePill");
+                        queue.add(tree);
+
+                    }
+                }
+                // fly
+                newState = fly(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("FLY: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        MyTreeNode tree = new MyTreeNode(newState, parent, "fly");
+                        queue.add(tree);
+
+                    }
+                }
+                // kill
+                newState = kill(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("KILL: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        MyTreeNode tree = new MyTreeNode(newState, parent, "kill");
+                        queue.add(tree);
+
+                    }
+                }
+            }
+            if (currentHostages == 0) {
+                if (neoPositionX == telephoneX && neoPositionY == telephoneY) {
+                    done = true;
+                }
+            }
+            if (!done && queue.size() == 0) {
+                noSol = true;
+            }
+        } while (!done && queue.size() > 0);
+        String out = "";
+        if (noSol) {
+            out = "No Solution";
+        } else {
+            int kills = 0;
+            int death = 0;
+            boolean[] agentDead = getAgentDead(x);
+            int[] hostagesDmg = getHostagesDmg(x);
+            boolean[] hostageAgentKilled = getHostageAgentKilled(x);
+
+            for (boolean dead : agentDead) {
+                if (dead) {
+                    kills++;
+                }
+            }
+
+            for (boolean dead : hostageAgentKilled) {
+                if (dead) {
+                    kills++;
+                }
+            }
+
+            for (int i = 0; i < hostagesDmg.length; i++) {
+                // if (!hostageAgentKilled[i]) {
+                    if (hostagesDmg[i] == 100) {
+                        death++;
+                    // }
+                }
+
+            }
+            while (parent.action != "root") {
+                out = "," + parent.action + out;
+                parent = parent.parent;
+            }
+            out = out.substring(1);
+            // death--;
+            out += ";" + death + ";" + kills + ";" + counter;
+        }
+        return out;
     }
 
     // Change grid to a string to be used
@@ -1607,6 +1803,9 @@ public class Matrix {
         MyTreeNode tree = new MyTreeNode(stateIn, null, "root");
         Queue<MyTreeNode> queue = new ArrayDeque<>();
         queue.add(tree);
+        Stack<MyTreeNode> stack = new Stack<>() ;
+        stack.add(tree);
+
         // MyTreeNode<String> tree = new MyTreeNode<String>(, "root");
         // System.out.println(root.hashValue());
         // <MyTreeNode<String>> queue = new ArrayDeque<>();
@@ -1619,7 +1818,7 @@ public class Matrix {
                 return (bfs(queue));
 
             case "DF":
-                break;
+            return (dfs(stack));
 
         }
         return "";
@@ -1639,7 +1838,7 @@ public class Matrix {
 
         // solve(grid1, "BFS", false);
         // System.out.println("hi");
-        String out = solve(grid2, "BF", false);
+        String out = solve(grid3, "BF", false);
         System.out.println(out);
 
         // }
