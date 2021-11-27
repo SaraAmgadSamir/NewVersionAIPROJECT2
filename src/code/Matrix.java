@@ -1,4 +1,5 @@
 package code;
+
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -374,7 +375,7 @@ public class Matrix {
         int[] hostagesY;
         if (temp[15].length() > 1) {
 
-            String[] hostagXString = temp[14].split(",");
+            String[] hostagXString = temp[15].split(",");
             hostagesY = new int[hostagXString.length];
 
             for (int i = 0; i < hostagXString.length; i++) {
@@ -595,16 +596,10 @@ public class Matrix {
         int carryCount = getCarryCount(x);
 
         //////////////////////////////////////////////////////////////////////////////////
-        // add damage
-        Pair HostDmg = addDmg(hostagesDmg, hostageAgent, hostagesCarried, hostagesX, hostagesY, telephoneX, telephoneY,
-                hostageAgentKilled);
-        hostagesDmg = (int[]) HostDmg.a;
-        hostageAgent = (boolean[]) HostDmg.b;
+
         boolean up = false;
-        if ((parent != null && parent.action != "down") || parent == null) {
-
+        if (parent.action != "down") {
             if (neoPositionX - 1 >= 0) {
-
                 up = true;
                 for (int i = 0; i < agentsX.length; i++) {
                     if (agentsX[i] == neoPositionX - 1 && agentsY[i] == neoPositionY && !agentDead[i]) {
@@ -626,12 +621,16 @@ public class Matrix {
 
                     }
                 }
+                // add damage
+                Pair HostDmg = addDmg(hostagesDmg, hostageAgent, hostagesCarried, hostagesX, hostagesY, telephoneX,
+                        telephoneY, hostageAgentKilled);
+                hostagesDmg = (int[]) HostDmg.a;
+                hostageAgent = (boolean[]) HostDmg.b;
                 if (up) {
                     neoPositionX -= 1;
 
                     for (int i = 0; i < hostagesCarried.length; i++) {
                         if (hostagesCarried[i]) {
-                            // currentMatrix.hostagesX[i] -= 1;
                             hostagesX[i] = neoPositionX;
                         }
                     }
@@ -683,14 +682,9 @@ public class Matrix {
         int carryCount = getCarryCount(x);
 
         //////////////////////////////////////////////////////////////////////////////////
-        // add damage
-        Pair HostDmg = addDmg(hostagesDmg, hostageAgent, hostagesCarried, hostagesX, hostagesY, telephoneX, telephoneY,
-                hostageAgentKilled);
-        hostagesDmg = (int[]) HostDmg.a;
-        hostageAgent = (boolean[]) HostDmg.b;
-        boolean down = false;
-        if ((parent != null && parent.action != "up") || parent == null) {
 
+        boolean down = false;
+        if (parent.action != "up") {
             if (neoPositionX + 1 < gridSizeX) {
 
                 down = true;
@@ -714,6 +708,11 @@ public class Matrix {
 
                     }
                 }
+                // add damage
+                Pair HostDmg = addDmg(hostagesDmg, hostageAgent, hostagesCarried, hostagesX, hostagesY, telephoneX,
+                        telephoneY, hostageAgentKilled);
+                hostagesDmg = (int[]) HostDmg.a;
+                hostageAgent = (boolean[]) HostDmg.b;
                 if (down) {
                     neoPositionX += 1;
 
@@ -771,11 +770,6 @@ public class Matrix {
         int carryCount = getCarryCount(x);
 
         //////////////////////////////////////////////////////////////////////////////////
-        // add damage
-        Pair HostDmg = addDmg(hostagesDmg, hostageAgent, hostagesCarried, hostagesX, hostagesY, telephoneX, telephoneY,
-                hostageAgentKilled);
-        hostagesDmg = (int[]) HostDmg.a;
-        hostageAgent = (boolean[]) HostDmg.b;
         boolean left = false;
         if ((parent != null && parent.action != "right") || parent == null) {
 
@@ -802,6 +796,11 @@ public class Matrix {
 
                     }
                 }
+                // add damage
+                Pair HostDmg = addDmg(hostagesDmg, hostageAgent, hostagesCarried, hostagesX, hostagesY, telephoneX,
+                        telephoneY, hostageAgentKilled);
+                hostagesDmg = (int[]) HostDmg.a;
+                hostageAgent = (boolean[]) HostDmg.b;
                 if (left) {
                     neoPositionY -= 1;
 
@@ -859,11 +858,6 @@ public class Matrix {
         int carryCount = getCarryCount(x);
 
         //////////////////////////////////////////////////////////////////////////////////
-        // add damage
-        Pair HostDmg = addDmg(hostagesDmg, hostageAgent, hostagesCarried, hostagesX, hostagesY, telephoneX, telephoneY,
-                hostageAgentKilled);
-        hostagesDmg = (int[]) HostDmg.a;
-        hostageAgent = (boolean[]) HostDmg.b;
         boolean right = false;
         if ((parent != null && parent.action != "left") || parent == null) {
 
@@ -890,6 +884,11 @@ public class Matrix {
 
                     }
                 }
+                // add damage
+                Pair HostDmg = addDmg(hostagesDmg, hostageAgent, hostagesCarried, hostagesX, hostagesY, telephoneX,
+                        telephoneY, hostageAgentKilled);
+                hostagesDmg = (int[]) HostDmg.a;
+                hostageAgent = (boolean[]) HostDmg.b;
                 if (right) {
                     neoPositionY += 1;
 
@@ -951,7 +950,7 @@ public class Matrix {
 
         boolean carry = false;
         for (int i = 0; i < hostagesX.length; i++) {
-            if (neoPositionX == hostagesX[i] && neoPositionY == hostagesY[i] && hostagesDmg[i] < 100) {
+            if (neoPositionX == hostagesX[i] && neoPositionY == hostagesY[i]) {
                 if (!hostagesCarried[i]) {
                     if (!(hostagesX[i] == telephoneX && hostagesY[i] == telephoneY)) {
                         if (!hostageAgent[i]) {
@@ -1027,10 +1026,11 @@ public class Matrix {
                     // if (hostagesX[i] == telephoneX && hostagesY[i] == telephoneY) {
                     carryCount--;
                     currentHostages--;
-                    hostagesX[i]=telephoneX;
-                    hostagesY[i]=telephoneY;
+                    hostagesX[i] = telephoneX;
+                    hostagesY[i] = telephoneY;
                     hostagesCarried[i] = false;
                     drop = true;
+                    break;
 
                 }
                 // }
@@ -1360,10 +1360,12 @@ public class Matrix {
             /////////////////////////////////////////////////////////////////////////////////
             // up
             if (neoDmg < 100) {
+                // System.out.println(counter);
                 String newState = up(x, parent);
-
                 if (newState != null) {
                     if (!hash.contains(newHash(newState))) {
+                        // System.out.println("UP: Before : "+ x);
+                        // System.out.println("After: "+newState);
                         hash.add(newHash(newState));
                         MyTreeNode tree = new MyTreeNode(newState, parent, "up");
                         queue.add(tree);
@@ -1374,6 +1376,9 @@ public class Matrix {
                 newState = down(x, parent);
                 if (newState != null) {
                     if (!hash.contains(newHash(newState))) {
+                        // System.out.println("Down: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        // System.out.println("Test"+Arrays.toString(getHostagesX(newState))+"vs"+Arrays.toString(getHostagesX(x)));
                         hash.add(newHash(newState));
                         MyTreeNode tree = new MyTreeNode(newState, parent, "down");
                         queue.add(tree);
@@ -1384,6 +1389,8 @@ public class Matrix {
                 newState = left(x, parent);
                 if (newState != null) {
                     if (!hash.contains(newHash(newState))) {
+                        // System.out.println("LEFT: Before : "+ x);
+                        // System.out.println("After: "+newState);
                         hash.add(newHash(newState));
                         MyTreeNode tree = new MyTreeNode(newState, parent, "left");
                         queue.add(tree);
@@ -1394,6 +1401,8 @@ public class Matrix {
                 newState = right(x, parent);
                 if (newState != null) {
                     if (!hash.contains(newHash(newState))) {
+                        // System.out.println("RIGHT: Before : "+ x);
+                        // System.out.println("After: "+newState);
                         hash.add(newHash(newState));
                         MyTreeNode tree = new MyTreeNode(newState, parent, "right");
                         queue.add(tree);
@@ -1404,6 +1413,8 @@ public class Matrix {
                 newState = carry(x, parent);
                 if (newState != null) {
                     if (!hash.contains(newHash(newState))) {
+                        // System.out.println("CARRY: Before : "+ x);
+                        // System.out.println("After: "+newState);
                         hash.add(newHash(newState));
                         MyTreeNode tree = new MyTreeNode(newState, parent, "carry");
                         queue.add(tree);
@@ -1414,6 +1425,8 @@ public class Matrix {
                 newState = drop(x, parent);
                 if (newState != null) {
                     if (!hash.contains(newHash(newState))) {
+                        // System.out.println("DROP: Before : "+ x);
+                        // System.out.println("After: "+newState);
                         hash.add(newHash(newState));
                         MyTreeNode tree = new MyTreeNode(newState, parent, "drop");
                         queue.add(tree);
@@ -1424,6 +1437,8 @@ public class Matrix {
                 newState = takePill(x, parent);
                 if (newState != null) {
                     if (!hash.contains(newHash(newState))) {
+                        // System.out.println("TAKEPILL: Before : "+ x);
+                        // System.out.println("After: "+newState);
                         hash.add(newHash(newState));
                         MyTreeNode tree = new MyTreeNode(newState, parent, "takePill");
                         queue.add(tree);
@@ -1434,6 +1449,8 @@ public class Matrix {
                 newState = fly(x, parent);
                 if (newState != null) {
                     if (!hash.contains(newHash(newState))) {
+                        // System.out.println("FLY: Before : "+ x);
+                        // System.out.println("After: "+newState);
                         hash.add(newHash(newState));
                         MyTreeNode tree = new MyTreeNode(newState, parent, "fly");
                         queue.add(tree);
@@ -1444,6 +1461,8 @@ public class Matrix {
                 newState = kill(x, parent);
                 if (newState != null) {
                     if (!hash.contains(newHash(newState))) {
+                        // System.out.println("KILL: Before : "+ x);
+                        // System.out.println("After: "+newState);
                         hash.add(newHash(newState));
                         MyTreeNode tree = new MyTreeNode(newState, parent, "kill");
                         queue.add(tree);
@@ -1609,7 +1628,7 @@ public class Matrix {
 
         // solve(grid1, "BFS", false);
         // System.out.println("hi");
-        String out = solve(grid5, "BF", false);
+        String out = solve(grid, "BF", false);
         System.out.println(out);
 
         // }
