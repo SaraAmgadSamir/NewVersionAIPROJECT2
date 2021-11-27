@@ -1330,8 +1330,8 @@ public class Matrix {
             }
         }
         return "" + getNeoX(x) + getNeoY(x) + getNeoDmg(x) + numberOfAgents + currentHostages + numberOfCarriedHostages
-                + availablePills
-                +Arrays.toString(getPillsTaken(x));
+                + availablePills;
+                // +Arrays.toString(getPillsTaken(x))
                 // +Arrays.toString(getAgentDead(x))
                 // +Arrays.toString(getHostageAgentKilled(x));
 
