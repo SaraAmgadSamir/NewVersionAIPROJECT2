@@ -629,11 +629,11 @@ public class Matrix {
                 if (up) {
                     neoPositionX -= 1;
 
-                    for (int i = 0; i < hostagesCarried.length; i++) {
-                        if (hostagesCarried[i]) {
-                            hostagesX[i] = neoPositionX;
-                        }
-                    }
+                    // for (int i = 0; i < hostagesCarried.length; i++) {
+                    // if (hostagesCarried[i]) {
+                    // hostagesX[i] = neoPositionX;
+                    // }
+                    // }
                     String newState = gridSizeX + ";" + gridSizeY + ";" + cap + ";" + neoPositionX + ";" + neoPositionY
                             + ";" + telephoneX + ";" + telephoneY + ";" + Arrays.toString(agentsX) + ";"
                             + Arrays.toString(agentsY) + ";" + Arrays.toString(pillsX) + ";" + Arrays.toString(pillsY)
@@ -716,12 +716,12 @@ public class Matrix {
                 if (down) {
                     neoPositionX += 1;
 
-                    for (int i = 0; i < hostagesCarried.length; i++) {
-                        if (hostagesCarried[i]) {
-                            // currentMatrix.hostagesX[i] -= 1;
-                            hostagesX[i] = neoPositionX;
-                        }
-                    }
+                    // for (int i = 0; i < hostagesCarried.length; i++) {
+                    // if (hostagesCarried[i]) {
+                    // // currentMatrix.hostagesX[i] -= 1;
+                    // hostagesX[i] = neoPositionX;
+                    // }
+                    // }
                     String newState = gridSizeX + ";" + gridSizeY + ";" + cap + ";" + neoPositionX + ";" + neoPositionY
                             + ";" + telephoneX + ";" + telephoneY + ";" + Arrays.toString(agentsX) + ";"
                             + Arrays.toString(agentsY) + ";" + Arrays.toString(pillsX) + ";" + Arrays.toString(pillsY)
@@ -804,12 +804,12 @@ public class Matrix {
                 if (left) {
                     neoPositionY -= 1;
 
-                    for (int i = 0; i < hostagesCarried.length; i++) {
-                        if (hostagesCarried[i]) {
-                            // currentMatrix.hostagesX[i] -= 1;
-                            hostagesY[i] = neoPositionY;
-                        }
-                    }
+                    // for (int i = 0; i < hostagesCarried.length; i++) {
+                    // if (hostagesCarried[i]) {
+                    // // currentMatrix.hostagesX[i] -= 1;
+                    // hostagesY[i] = neoPositionY;
+                    // }
+                    // }
                     String newState = gridSizeX + ";" + gridSizeY + ";" + cap + ";" + neoPositionX + ";" + neoPositionY
                             + ";" + telephoneX + ";" + telephoneY + ";" + Arrays.toString(agentsX) + ";"
                             + Arrays.toString(agentsY) + ";" + Arrays.toString(pillsX) + ";" + Arrays.toString(pillsY)
@@ -892,12 +892,12 @@ public class Matrix {
                 if (right) {
                     neoPositionY += 1;
 
-                    for (int i = 0; i < hostagesCarried.length; i++) {
-                        if (hostagesCarried[i]) {
-                            // currentMatrix.hostagesX[i] -= 1;
-                            hostagesY[i] = neoPositionY;
-                        }
-                    }
+                    // for (int i = 0; i < hostagesCarried.length; i++) {
+                    // if (hostagesCarried[i]) {
+                    // // currentMatrix.hostagesX[i] -= 1;
+                    // hostagesY[i] = neoPositionY;
+                    // }
+                    // }
                     String newState = gridSizeX + ";" + gridSizeY + ";" + cap + ";" + neoPositionX + ";" + neoPositionY
                             + ";" + telephoneX + ";" + telephoneY + ";" + Arrays.toString(agentsX) + ";"
                             + Arrays.toString(agentsY) + ";" + Arrays.toString(pillsX) + ";" + Arrays.toString(pillsY)
@@ -1013,29 +1013,29 @@ public class Matrix {
         int carryCount = getCarryCount(x);
 
         //////////////////////////////////////////////////////////////////////////////////
+
+        boolean drop = false;
+        if (parent.action != "drop") {
+            for (int i = 0; i < hostagesX.length; i++) {
+                if (neoPositionX == telephoneX && neoPositionY == telephoneY) {
+                    if (hostagesCarried[i]) {
+                        // if (hostagesX[i] == telephoneX && hostagesY[i] == telephoneY) {
+                        carryCount--;
+                        currentHostages--;
+                        hostagesX[i] = telephoneX;
+                        hostagesY[i] = telephoneY;
+                        hostagesCarried[i] = false;
+                        drop = true;
+                    }
+                    // }
+                }
+            }
+        }
         // add damage
         Pair HostDmg = addDmg(hostagesDmg, hostageAgent, hostagesCarried, hostagesX, hostagesY, telephoneX, telephoneY,
                 hostageAgentKilled);
         hostagesDmg = (int[]) HostDmg.a;
         hostageAgent = (boolean[]) HostDmg.b;
-
-        boolean drop = false;
-        for (int i = 0; i < hostagesX.length; i++) {
-            if (neoPositionX == telephoneX && neoPositionY == telephoneY) {
-                if (hostagesCarried[i]) {
-                    // if (hostagesX[i] == telephoneX && hostagesY[i] == telephoneY) {
-                    carryCount--;
-                    currentHostages--;
-                    hostagesX[i] = telephoneX;
-                    hostagesY[i] = telephoneY;
-                    hostagesCarried[i] = false;
-                    drop = true;
-                    break;
-
-                }
-                // }
-            }
-        }
         if (drop) {
             String newState = gridSizeX + ";" + gridSizeY + ";" + cap + ";" + neoPositionX + ";" + neoPositionY + ";"
                     + telephoneX + ";" + telephoneY + ";" + Arrays.toString(agentsX) + ";" + Arrays.toString(agentsY)
@@ -1151,12 +1151,6 @@ public class Matrix {
                 if (neoPositionX == padsX[i] && neoPositionY == padsY[i] && !fly) {
                     neoPositionX = padsX[i + 1];
                     neoPositionY = padsY[i + 1];
-                    for (int j = 0; j < hostagesCarried.length; j++) {
-                        if (hostagesCarried[j]) {
-                            hostagesX[j] = neoPositionX;
-                            hostagesY[j] = neoPositionY;
-                        }
-                    }
                     fly = true;
                     break;
                 }
@@ -1167,6 +1161,7 @@ public class Matrix {
                 hostageAgentKilled);
         hostagesDmg = (int[]) HostDmg.a;
         hostageAgent = (boolean[]) HostDmg.b;
+        /////////////
         if (fly) {
             String newState = gridSizeX + ";" + gridSizeY + ";" + cap + ";" + neoPositionX + ";" + neoPositionY + ";"
                     + telephoneX + ";" + telephoneY + ";" + Arrays.toString(agentsX) + ";" + Arrays.toString(agentsY)
@@ -1232,17 +1227,20 @@ public class Matrix {
                         agentDead[i] = true;
                         kill = true;
                     }
-                } else if (neoPositionX == agentsX[i] - 1 && neoPositionY == agentsY[i]) {
+                }
+                if (neoPositionX == agentsX[i] - 1 && neoPositionY == agentsY[i]) {
                     if (!agentDead[i]) {
                         agentDead[i] = true;
                         kill = true;
                     }
-                } else if (neoPositionX == agentsX[i] && neoPositionY == agentsY[i] + 1) {
+                }
+                if (neoPositionX == agentsX[i] && neoPositionY == agentsY[i] + 1) {
                     if (!agentDead[i]) {
                         agentDead[i] = true;
                         kill = true;
                     }
-                } else if (neoPositionX == agentsX[i] && neoPositionY == agentsY[i] - 1) {
+                }
+                if (neoPositionX == agentsX[i] && neoPositionY == agentsY[i] - 1) {
                     if (!agentDead[i]) {
                         agentDead[i] = true;
                         kill = true;
@@ -1258,19 +1256,22 @@ public class Matrix {
                             currentHostages--;
                             kill = true;
                         }
-                    } else if (neoPositionX == hostagesX[i] - 1 && neoPositionY == hostagesY[i]) {
+                    }
+                    if (neoPositionX == hostagesX[i] - 1 && neoPositionY == hostagesY[i]) {
                         if (!hostageAgentKilled[i]) {
                             hostageAgentKilled[i] = true;
                             kill = true;
                             currentHostages--;
                         }
-                    } else if (neoPositionX == hostagesX[i] && neoPositionY == hostagesY[i] + 1) {
+                    }
+                    if (neoPositionX == hostagesX[i] && neoPositionY == hostagesY[i] + 1) {
                         if (!hostageAgentKilled[i]) {
                             hostageAgentKilled[i] = true;
                             kill = true;
                             currentHostages--;
                         }
-                    } else if (neoPositionX == hostagesX[i] && neoPositionY == hostagesY[i] - 1) {
+                    }
+                    if (neoPositionX == hostagesX[i] && neoPositionY == hostagesY[i] - 1) {
                         if (!hostageAgentKilled[i]) {
                             hostageAgentKilled[i] = true;
                             kill = true;
@@ -1327,7 +1328,8 @@ public class Matrix {
             }
         }
         return "" + getNeoX(x) + getNeoY(x) + getNeoDmg(x) + numberOfAgents + currentHostages + numberOfCarriedHostages
-                + availablePills + Arrays.toString(getHostagesDmg(x));
+                + availablePills;
+        // + Arrays.toString(getHostagesDmg(x));
 
     }
 
@@ -1342,6 +1344,7 @@ public class Matrix {
         String x = "";
         MyTreeNode parent;
         boolean done = false;
+        boolean noSol = false;
         do {
             // increment the counter to count the branches of the search
             counter++;
@@ -1475,37 +1478,44 @@ public class Matrix {
                     done = true;
                 }
             }
-        } while (!done);
+            if (!done && queue.size() == 0) {
+                noSol = true;
+            }
+        } while (!done && queue.size() > 0);
         String out = "";
-        int kills = 0;
-        int death = 0;
-        boolean[] agentDead = getAgentDead(x);
-        int[] hostagesDmg = getHostagesDmg(x);
-        boolean[] hostageAgentKilled = getHostageAgentKilled(x);
+        if (noSol) {
+            out = "No Solution";
+        } else {
+            int kills = 0;
+            int death = 0;
+            boolean[] agentDead = getAgentDead(x);
+            int[] hostagesDmg = getHostagesDmg(x);
+            boolean[] hostageAgentKilled = getHostageAgentKilled(x);
 
-        for (boolean dead : agentDead) {
-            if (dead) {
-                kills++;
+            for (boolean dead : agentDead) {
+                if (dead) {
+                    kills++;
+                }
             }
-        }
 
-        for (boolean dead : hostageAgentKilled) {
-            if (dead) {
-                kills++;
+            for (boolean dead : hostageAgentKilled) {
+                if (dead) {
+                    kills++;
+                }
             }
-        }
 
-        for (int dead : hostagesDmg) {
-            if (dead == 100) {
-                death++;
+            for (int dead : hostagesDmg) {
+                if (dead == 100) {
+                    death++;
+                }
             }
+            while (parent.action != "root") {
+                out = "," + parent.action + out;
+                parent = parent.parent;
+            }
+            out = out.substring(1);
+            out += ";" + death + ";" + kills + ";" + counter;
         }
-        while (parent.action != "root") {
-            out = "," + parent.action + out;
-            parent = parent.parent;
-        }
-        out = out.substring(1);
-        out += ";" + death + ";" + kills + ";" + counter;
         return out;
     }
 
@@ -1621,14 +1631,15 @@ public class Matrix {
         // String grid = genGrid();
         String grid = "5,5;2;0,4;1,4;0,1,1,1,2,1,3,1,3,3,3,4;1,0,2,4;0,3,4,3,4,3,0,3;0,0,30,3,0,80,4,4,80";
         String grid1 = "5,5;1;1,4;1,0;0,4;0,0,2,2;3,4,4,2,4,2,3,4;0,2,32,0,1,38";
-        String grid3 = "6,6;2;2,4;2,2;0,4,1,4,3,0,4,2;0,1,1,3;4,4,3,1,3,1,4,4;0,0,94,1,2,38,4,1,76,4,0,80";
         String grid5 = "5,5;2;0,4;3,4;3,1,1,1;2,3;3,0,0,1,0,1,3,0;4,2,54,4,0,85,1,0,43";
         String grid0 = "5,5;2;3,4;1,2;0,3,1,4;2,3;4,4,0,2,0,2,4,4;2,2,91,2,4,62";
         String grid9 = "5,5;2;0,4;1,4;0,1,1,1,2,1,3,1,3,3,3,4;1,0,2,4;0,3,4,3,4,3,0,3;0,0,30,3,0,80,4,4,80";
+        String grid2 = "5,5;2;3,2;0,1;4,1;0,3;1,2,4,2,4,2,1,2,0,4,3,0,3,0,0,4;1,1,77,3,4,34";
+        String grid3 = "5,5;1;0,4;4,4;0,3,1,4,2,1,3,0,4,1;4,0;2,4,3,4,3,4,2,4;0,2,98,1,2,98,2,2,98,3,2,98,4,2,98,2,0,1";
 
         // solve(grid1, "BFS", false);
         // System.out.println("hi");
-        String out = solve(grid, "BF", false);
+        String out = solve(grid2, "BF", false);
         System.out.println(out);
 
         // }
