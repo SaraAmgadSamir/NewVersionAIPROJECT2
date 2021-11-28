@@ -1088,7 +1088,7 @@ public class Matrix {
                 if (!pillTaken[i]) {
                     takePill = true;
                     pillTaken[i] = true;
-                    break;
+                    // break;
 
                 }
             }
@@ -1216,7 +1216,7 @@ public class Matrix {
         for (int i = 0; i < hostagesX.length; i++) {
             if (hostagesX[i] == neoPositionX && hostagesY[i] == neoPositionY) {
                 if (hostagesDmg[i] >= 98) {
-                    canKill = false;
+                    // canKill = false;
                 }
             }
 
