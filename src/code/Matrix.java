@@ -1720,249 +1720,179 @@ public class Matrix {
     }
 
     public static String ID(Stack<MyTreeNode> queue) {
-        String out = "";
-        String x;
-        MyTreeNode parent;
-        boolean done = false;
-        int currentHostages;
-        int neoPositionX;
-        int neoPositionY;
-        int telephoneX;
-        int telephoneY;
-        int neoDmg;
-        int currentDepth = -1;
-        int parentDepth;
-        HashSet<String> hash;
+        int maxDepth = 0;
+        String done = "No Solution";
         MyTreeNode root = queue.peek();
-        boolean stop = false;
-        boolean noSol = false;
 
-        // I will stop iterating once I reach the goal state, so the big while will keep
-        // iterating as long as the goal state is not reached
-        do {
-            // increment the maximum depth of each iteration, as well as, empty the stack
-            // and the hashset
-            currentDepth++;
-            hash = new HashSet<>();
+        while (done.equals("No Solution")) {
+            done = IDBranching(queue, maxDepth);
+            maxDepth++;
             queue = new Stack<MyTreeNode>();
             queue.add(root);
-            stop = false;
-            hash.add(newHash(root.currentState));
-            // As long as the parent has depth less than that of the current maximum depth,
-            // It will have spave to branch
-            do {
-                if (!queue.isEmpty()) {
-                    x = queue.peek().currentState;
-                    parentDepth = queue.peek().depth;
-                    parent = queue.pop();
-                    currentHostages = getCurrentHostages(x);
-                    neoPositionX = getNeoX(x);
-                    neoPositionY = getNeoY(x);
-                    telephoneX = getTelephoneX(x);
-                    telephoneY = getTelephoneY(x);
-                    neoDmg = getNeoDmg(x);
-                    // check on the current node, if it is the goal state, break out of the loop and
-                    // don't continue iterating
-                    if (currentHostages == 0) {
-                        if (neoPositionX == telephoneX && neoPositionY == telephoneY) {
-                            done = true;
+        }
+        return done;
+    }
+
+    public static String IDBranching(Stack<MyTreeNode> queue, int maxDepth) {
+        int counter = 0;
+        MyTreeNode parent;
+        HashSet<String> hash = new HashSet<>();
+        boolean done = false;
+        String out = "";
+        // keep on branching as long as the queue is not empty
+        while (!queue.isEmpty()) {
+            parent = queue.pop();
+            String x = parent.currentState;
+            int currentDepth = parent.depth;
+            counter++;
+            int neoDmg = getNeoDmg(x);
+            int currentHostages = getCurrentHostages(x);
+            int neoPositionX = getNeoX(x);
+            int neoPositionY = getNeoY(x);
+            int telephoneX = getTelephoneX(x);
+            int telephoneY = getTelephoneY(x);
+            hash.add(newHash(x));
+            // check if the current node lead to a goal state, if yes, done is true and an
+            // output is returned
+            if (currentHostages == 0) {
+                if (neoPositionX == telephoneX && neoPositionY == telephoneY) {
+                    done = true;
+                }
+            }
+            if (done) {
+                int kills = 0;
+                int death = 0;
+                boolean[] agentDead = getAgentDead(x);
+                int[] hostagesDmg = getHostagesDmg(x);
+                boolean[] hostageAgentKilled = getHostageAgentKilled(x);
+
+                for (boolean dead : agentDead) {
+                    if (dead) {
+                        kills++;
+                    }
+                }
+
+                for (boolean dead : hostageAgentKilled) {
+                    if (dead) {
+                        kills++;
+                    }
+                }
+
+                for (int i = 0; i < hostagesDmg.length; i++) {
+                    if (hostagesDmg[i] == 100) {
+                        death++;
+                    }
+
+                }
+                while (parent.action != "root") {
+                    out = "," + parent.action + out;
+                    parent = parent.parent;
+                }
+                out = out.substring(1);
+                out += ";" + death + ";" + kills + ";" + counter;
+                return out;
+            }
+            if (parent.depth < maxDepth) {
+                // If entered here, then, we can branch more
+                if (neoDmg < 100) {
+                    // up
+                    String newState = up(x, parent);
+                    if (newState != null) {
+                        if (!hash.contains(newHash(newState))) {
+                            hash.add(newHash(newState));
+                            MyTreeNode tree = new MyTreeNode(newState, parent, "up", currentDepth + 1);
+                            queue.add(tree);
+
                         }
                     }
-                    // If it reached here, then the goal state is not reached yet
-                    if (!done) {
-                        // If the depth is === to the current depth, check on the nodes in the queue
-                        // maybe one of the lead to the goal state before removing them from the stack,
-                        // and keep on removing till we find a parent that can branch out
-                        // more(parentDepth<currentDepth)
-                        while ((!queue.isEmpty()) && parentDepth == currentDepth) {
-                            if (currentHostages == 0) {
-                                if (neoPositionX == telephoneX && neoPositionY == telephoneY) {
-                                    done = true;
-                                    break;
-                                }
-                            }
-                            x = queue.peek().currentState;
-                            parentDepth = queue.peek().depth;
-                            parent = queue.pop();
-                            currentHostages = getCurrentHostages(x);
-                            neoPositionX = getNeoX(x);
-                            neoPositionY = getNeoY(x);
-                            telephoneX = getTelephoneX(x);
-                            telephoneY = getTelephoneY(x);
-                            neoDmg = getNeoDmg(x);
-                            // in case all parents cannot branch out
-                            if (queue.size() == 1 && parentDepth == currentDepth) {
-                                stop = true;
-                            }
+                    // down
+                    newState = down(x, parent);
+                    if (newState != null) {
+                        if (!hash.contains(newHash(newState))) {
+                            hash.add(newHash(newState));
+                            MyTreeNode tree = new MyTreeNode(newState, parent, "down", currentDepth + 1);
+                            queue.add(tree);
 
                         }
-
-                        if (!done && !stop) {
-                            // Do the same steps as the DFS
-
-                            // up
-                            if (neoDmg < 100) {
-                                // System.out.println(counter);
-                                String newState = up(x, parent);
-                                if (newState != null) {
-                                    if (!hash.contains(newHash(newState))) {
-                                        // System.out.println("UP: Before : "+ x);
-                                        // System.out.println("After: "+newState);
-                                        hash.add(newHash(newState));
-                                        MyTreeNode tree = new MyTreeNode(newState, parent, "up", parentDepth + 1);
-                                        queue.add(tree);
-
-                                    }
-                                }
-                                // down
-                                newState = down(x, parent);
-                                if (newState != null) {
-                                    if (!hash.contains(newHash(newState))) {
-                                        // System.out.println("Down: Before : "+ x);
-                                        // System.out.println("After: "+newState);
-                                        // System.out.println("Test"+Arrays.toString(getHostagesX(newState))+"vs"+Arrays.toString(getHostagesX(x)));
-                                        hash.add(newHash(newState));
-                                        MyTreeNode tree = new MyTreeNode(newState, parent, "down", parentDepth + 1);
-                                        queue.add(tree);
-
-                                    }
-                                }
-                                // left
-                                newState = left(x, parent);
-                                if (newState != null) {
-                                    if (!hash.contains(newHash(newState))) {
-                                        // System.out.println("LEFT: Before : "+ x);
-                                        // System.out.println("After: "+newState);
-                                        hash.add(newHash(newState));
-                                        MyTreeNode tree = new MyTreeNode(newState, parent, "left", parentDepth + 1);
-                                        queue.add(tree);
-
-                                    }
-                                }
-                                // right
-                                newState = right(x, parent);
-                                if (newState != null) {
-                                    if (!hash.contains(newHash(newState))) {
-                                        // System.out.println("RIGHT: Before : "+ x);
-                                        // System.out.println("After: "+newState);
-                                        hash.add(newHash(newState));
-                                        MyTreeNode tree = new MyTreeNode(newState, parent, "right", parentDepth + 1);
-                                        queue.add(tree);
-
-                                    }
-                                }
-                                // carry
-                                newState = carry(x, parent);
-                                if (newState != null) {
-                                    if (!hash.contains(newHash(newState))) {
-                                        // System.out.println("CARRY: Before : "+ x);
-                                        // System.out.println("After: "+newState);
-                                        hash.add(newHash(newState));
-                                        MyTreeNode tree = new MyTreeNode(newState, parent, "carry", parentDepth + 1);
-                                        queue.add(tree);
-
-                                    }
-                                }
-                                // drop
-                                newState = drop(x, parent);
-                                if (newState != null) {
-                                    if (!hash.contains(newHash(newState))) {
-                                        // System.out.println("DROP: Before : "+ x);
-                                        // System.out.println("After: "+newState);
-                                        hash.add(newHash(newState));
-                                        MyTreeNode tree = new MyTreeNode(newState, parent, "drop", parentDepth + 1);
-                                        queue.add(tree);
-
-                                    }
-                                }
-                                // takepill
-                                newState = takePill(x, parent);
-                                if (newState != null) {
-                                    if (!hash.contains(newHash(newState))) {
-                                        // System.out.println("TAKEPILL: Before : "+ x);
-                                        // System.out.println("After: "+newState);
-                                        hash.add(newHash(newState));
-                                        MyTreeNode tree = new MyTreeNode(newState, parent, "takePill", parentDepth + 1);
-                                        queue.add(tree);
-
-                                    }
-                                }
-                                // fly
-                                newState = fly(x, parent);
-                                if (newState != null) {
-                                    if (!hash.contains(newHash(newState))) {
-                                        // System.out.println("FLY: Before : "+ x);
-                                        // System.out.println("After: "+newState);
-                                        hash.add(newHash(newState));
-                                        MyTreeNode tree = new MyTreeNode(newState, parent, "fly", parentDepth + 1);
-                                        queue.add(tree);
-
-                                    }
-                                }
-                                // kill
-                                newState = kill(x, parent);
-                                if (newState != null) {
-                                    if (!hash.contains(newHash(newState))) {
-                                        // System.out.println("KILL: Before : "+ x);
-                                        // System.out.println("After: "+newState);
-                                        hash.add(newHash(newState));
-                                        MyTreeNode tree = new MyTreeNode(newState, parent, "kill", parentDepth + 1);
-                                        queue.add(tree);
-
-                                    }
-                                }
-                            }
-
-                        }
-
                     }
-                } else {
-                    parent = root;
-                    x = parent.currentState;
-                    noSol = true;
-                }
-            } while (parent.depth <= currentDepth);
+                    // left
+                    newState = left(x, parent);
+                    if (newState != null) {
+                        if (!hash.contains(newHash(newState))) {
+                            hash.add(newHash(newState));
+                            MyTreeNode tree = new MyTreeNode(newState, parent, "left", currentDepth + 1);
+                            queue.add(tree);
 
-        } while (!done && !noSol);
-        if (noSol) {
-            return "No Solution";
-        } else {
-            int kills = 0;
-            int death = 0;
-            boolean[] agentDead = getAgentDead(x);
-            int[] hostagesDmg = getHostagesDmg(x);
-            boolean[] hostageAgentKilled = getHostageAgentKilled(x);
+                        }
+                    }
+                    // right
+                    newState = right(x, parent);
+                    if (newState != null) {
+                        if (!hash.contains(newHash(newState))) {
+                            hash.add(newHash(newState));
+                            MyTreeNode tree = new MyTreeNode(newState, parent, "right", currentDepth + 1);
+                            queue.add(tree);
 
-            for (boolean dead : agentDead) {
-                if (dead) {
-                    kills++;
+                        }
+                    }
+                    // carry
+                    newState = carry(x, parent);
+                    if (newState != null) {
+                        if (!hash.contains(newHash(newState))) {
+                            hash.add(newHash(newState));
+                            MyTreeNode tree = new MyTreeNode(newState, parent, "carry", currentDepth + 1);
+                            queue.add(tree);
+
+                        }
+                    }
+                    // drop
+                    newState = drop(x, parent);
+                    if (newState != null) {
+                        if (!hash.contains(newHash(newState))) {
+                            hash.add(newHash(newState));
+                            MyTreeNode tree = new MyTreeNode(newState, parent, "drop", currentDepth + 1);
+                            queue.add(tree);
+
+                        }
+                    }
+                    // takepill
+                    newState = takePill(x, parent);
+                    if (newState != null) {
+                        if (!hash.contains(newHash(newState))) {
+                            hash.add(newHash(newState));
+                            MyTreeNode tree = new MyTreeNode(newState, parent, "takePill", currentDepth + 1);
+                            queue.add(tree);
+
+                        }
+                    }
+                    // fly
+                    newState = fly(x, parent);
+                    if (newState != null) {
+                        if (!hash.contains(newHash(newState))) {
+                            hash.add(newHash(newState));
+                            MyTreeNode tree = new MyTreeNode(newState, parent, "fly", currentDepth + 1);
+                            queue.add(tree);
+
+                        }
+                    }
+                    // kill
+                    newState = kill(x, parent);
+                    if (newState != null) {
+                        if (!hash.contains(newHash(newState))) {
+                            hash.add(newHash(newState));
+                            MyTreeNode tree = new MyTreeNode(newState, parent, "kill", currentDepth + 1);
+                            queue.add(tree);
+
+                        }
+                    }
                 }
+
             }
 
-            for (boolean dead : hostageAgentKilled) {
-                if (dead) {
-                    kills++;
-                }
-            }
-
-            for (int i = 0; i < hostagesDmg.length; i++) {
-                // if (!hostageAgentKilled[i]) {
-                if (hostagesDmg[i] == 100) {
-                    death++;
-                    // }
-                }
-
-            }
-            while (parent.action != "root") {
-                out = "," + parent.action + out;
-                parent = parent.parent;
-            }
-            out = out.substring(1);
-            // death--;
-            out += ";" + death + ";" + kills + ";" + counter;
         }
 
-        return out;
+        return "No Solution";
+
     }
 
     // Change grid to a string to be used
@@ -2079,7 +2009,7 @@ public class Matrix {
 
         // solve(grid1, "BFS", false);
         // System.out.println("hi");
-        String out = solve(grid, "ID", false);
+        String out = solve(grid2, "ID", false);
         System.out.println(out);
 
         // }
