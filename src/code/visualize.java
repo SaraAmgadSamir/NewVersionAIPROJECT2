@@ -14,9 +14,17 @@ class MyTableCellRenderer extends JLabel implements TableCellRenderer {
             int row, int column) {
         if (String.valueOf(value).indexOf("Pill") != -1) {
             setForeground(Color.RED);
-        } else {
-            setForeground(Color.BLACK);
-        }
+        } else if (String.valueOf(value).indexOf("Hostage") != -1) {
+            setForeground(Color.ORANGE);
+        } else if (String.valueOf(value).indexOf("pad") != -1) {
+            setForeground(Color.GREEN);
+        } else if (String.valueOf(value).indexOf("Agent") != -1) {
+            setForeground(Color.MAGENTA);
+        } else if (String.valueOf(value).indexOf("Neo") != -1) {
+            setForeground(Color.white);
+        }  else if (String.valueOf(value).indexOf("TB") != -1) {
+            setForeground(Color.BLUE);
+        } 
         if (String.valueOf(value) != "null") {
             setText(String.valueOf(value));
         } else {
@@ -557,12 +565,26 @@ public class visualize extends Canvas {
         data[telephoneX][telephoneY] = "TB";
 
         for (int i = 0; i < hostagesX.length; i++) {
-            data[hostagesX[i]][hostagesY[i]] = "Hostage(" + hostagesDmg[i] + ") - " + (i + 1);
+            if (!hostagesCarried[i])
+                data[hostagesX[i]][hostagesY[i]] = "Hostage(" + hostagesDmg[i] + ") - " + (i + 1);
         }
         for (int i = 0; i < pillsX.length; i++) {
             if (!pillTaken[i])
                 data[pillsX[i]][pillsY[i]] = "Pill(" + (i + 1) + ")";
         }
+        for (int i = 0; i < agentsX.length; i++) {
+            if (!agentDead[i])
+                data[agentsX[i]][agentsY[i]] = "Agent(" + (i + 1) + ")";
+        }
+        int c = 1;
+        for (int i = 0; i < padsX.length; i += 4) {
+            data[padsX[i]][padsY[i]] = "pad(" + (c) + ")";
+            data[padsX[i + 1]][padsY[i + 1]] = "pad(" + (c) + ")";
+
+            c++;
+
+        }
+
         JTable jt = new JTable(data, column);
         jt.setTableHeader(null);
         jt.setFont(new Font("Serif", Font.BOLD, 20));
@@ -573,7 +595,7 @@ public class visualize extends Canvas {
 
         // jt.setBounds(0, 0, 1000, 1000);
         jt.setSize(1000, 1000);
-        jt.getValueAt(0, 0);
+        f.setBackground(Color.black);
         jt.setRowHeight(jt.getRowHeight() + 100);
 
         JScrollPane sp = new JScrollPane(jt);

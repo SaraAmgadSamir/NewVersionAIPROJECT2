@@ -1978,15 +1978,44 @@ public class Matrix {
         int pills = 0;
         for (int i = 0; i < hostagesX.length; i++) {
             if (!(hostagesX[i] == telephoneX && hostagesY[i] == telephoneY)) {
-                cost += Math.abs(hostagesX[i] - neoPositionX);
-                cost += Math.abs(hostagesY[i] - neoPositionY);
+                int costtemp = 0;
+                int padstemp = 0;
+                costtemp += Math.abs(hostagesX[i] - neoPositionX);
+                costtemp += Math.abs(hostagesY[i] - neoPositionY);
+                for (int j = 0; j < padsX.length; j += 2) {
+                    padstemp += Math.abs(padsX[j] - neoPositionX);
+                    padstemp += Math.abs(padsY[j] - neoPositionY);
+                    if (padstemp < costtemp) {
+                        padstemp += Math.abs(padsX[j + 1] - hostagesX[i]);
+                        padstemp += Math.abs(padsY[j + 1] - hostagesY[i]);
+                        if (padstemp < costtemp) {
+                            costtemp = padstemp;
+                        }
+                    }
+
+                }
+                cost += costtemp;
                 neoPositionX = hostagesX[i];
                 neoPositionY = hostagesY[i];
 
             }
         }
-        cost += Math.abs(neoPositionX - telephoneX);
-        cost += Math.abs(neoPositionY - telephoneY);
+        int costBooth = 0;
+        costBooth += Math.abs(neoPositionX - telephoneX);
+        costBooth += Math.abs(neoPositionY - telephoneY);
+        for (int j = 0; j < padsX.length; j += 2) {
+            int padstemp = 0;
+            padstemp += Math.abs(padsX[j] - neoPositionX);
+            padstemp += Math.abs(padsY[j] - neoPositionY);
+            if (padstemp < costBooth) {
+                padstemp += Math.abs(padsX[j + 1] - telephoneX);
+                padstemp += Math.abs(padsY[j + 1] - telephoneY);
+                if (padstemp < costBooth) {
+                    costBooth = padstemp;
+                }
+            }
+
+        }
         cost *= 2;
         for (boolean i : pillTaken) {
             if (!i) {
@@ -2044,7 +2073,7 @@ public class Matrix {
         int pills = 0;
 
         for (int i = 0; i < hostageAgent.length; i++) {
-            if(hostageAgent[i] && !hostageAgentKilled[i]){
+            if (hostageAgent[i] && !hostageAgentKilled[i]) {
                 cost += Math.abs(hostagesX[i] - neoPositionX);
                 cost += Math.abs(hostagesY[i] - neoPositionY);
                 kills++;
@@ -2082,7 +2111,7 @@ public class Matrix {
             }
 
         }
-        return deaths+kills;
+        return deaths + kills;
     }
 
     public static String UC(ArrayList<MyTreeNode> queue) {
@@ -2694,6 +2723,446 @@ public class Matrix {
         return out;
     }
 
+    public static String AS1(ArrayList<MyTreeNode> queue) {
+        String root = queue.get(0).currentState;
+        HashSet<String> hash = new HashSet<>();
+        int currentHostages;
+        int neoPositionX;
+        int neoPositionY;
+        int telephoneX;
+        int telephoneY;
+        String x = "";
+        MyTreeNode parent;
+        boolean done = false;
+        boolean noSol = false;
+        do {
+            // increment the counter to count the branches of the search
+            counter++;
+            // Comparator<MyTreeNode> employeeNameComparator=
+            // Comparator.comparing(MyTreeNode::getCost);
+            queue.sort(Comparator.comparing(MyTreeNode::getCost));
+            // remove first node from queu
+            parent = queue.remove(0);
+            x = parent.currentState;
+            hash.add(newHash(x));
+            /////////////////////////////////////////////////////////////////////////////////
+            neoPositionX = getNeoX(x);
+            neoPositionY = getNeoY(x);
+            telephoneX = getTelephoneX(x);
+            telephoneY = getTelephoneY(x);
+            currentHostages = getCurrentHostages(x);
+            // System.out.println(currentHostages);
+            int neoDmg = getNeoDmg(x);
+            /////////////////////////////////////////////////////////////////////////////////
+            // up
+            if (neoDmg < 100) {
+                // System.out.println(counter);
+                String newState = up(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("UP: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        int cost = getG1(newState);
+                        cost += getCost(newState);
+                        cost += getCost(x);
+                        MyTreeNode tree = new MyTreeNode(newState, parent, cost, "up");
+                        queue.add(tree);
+
+                    }
+                }
+                // down
+                newState = down(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("Down: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        // System.out.println("Test"+Arrays.toString(getHostagesX(newState))+"vs"+Arrays.toString(getHostagesX(x)));
+                        hash.add(newHash(newState));
+                        int cost = getG1(newState);
+                        cost += getCost(newState);
+                        cost += getCost(x);
+                        MyTreeNode tree = new MyTreeNode(newState, parent, cost, "down");
+                        queue.add(tree);
+
+                    }
+                }
+                // left
+                newState = left(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("LEFT: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        int cost = getG1(newState);
+                        cost += getCost(newState);
+                        cost += getCost(x);
+                        MyTreeNode tree = new MyTreeNode(newState, parent, cost, "left");
+                        queue.add(tree);
+
+                    }
+                }
+                // right
+                newState = right(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("RIGHT: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        int cost = getG1(newState);
+                        cost += getCost(newState);
+                        cost += getCost(x);
+                        MyTreeNode tree = new MyTreeNode(newState, parent, cost, "right");
+                        queue.add(tree);
+
+                    }
+                }
+                // carry
+                newState = carry(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("CARRY: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        int cost = getG1(newState);
+                        cost += getCost(newState);
+                        cost += getCost(x);
+                        MyTreeNode tree = new MyTreeNode(newState, parent, cost, "carry");
+                        queue.add(tree);
+
+                    }
+                }
+                // drop
+                newState = drop(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("DROP: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        int cost = getG1(newState);
+                        cost += getCost(newState);
+                        cost += getCost(x);
+                        MyTreeNode tree = new MyTreeNode(newState, parent, cost, "drop");
+                        queue.add(tree);
+
+                    }
+                }
+                // takepill
+                newState = takePill(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("TAKEPILL: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        int cost = getG1(newState);
+                        cost += getCost(newState);
+                        cost += getCost(x);
+                        MyTreeNode tree = new MyTreeNode(newState, parent, cost, "takePill");
+                        queue.add(tree);
+
+                    }
+                }
+                // fly
+                newState = fly(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("FLY: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        int cost = getG1(newState);
+                        cost += getCost(newState);
+                        cost += getCost(x);
+                        MyTreeNode tree = new MyTreeNode(newState, parent, cost, "fly");
+                        queue.add(tree);
+
+                    }
+                }
+                // kill
+                newState = kill(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("KILL: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        int cost = getG1(newState);
+                        cost += getCost(newState);
+                        cost += getCost(x);
+                        MyTreeNode tree = new MyTreeNode(newState, parent, cost, "kill");
+                        queue.add(tree);
+
+                    }
+                }
+            }
+            if (currentHostages == 0) {
+                if (neoPositionX == telephoneX && neoPositionY == telephoneY) {
+                    done = true;
+                }
+            }
+            if (!done && queue.size() == 0) {
+                noSol = true;
+            }
+        } while (!done && queue.size() > 0);
+        String out = "";
+        if (noSol) {
+            out = "No Solution";
+        } else {
+            int kills = 0;
+            int death = 0;
+            boolean[] agentDead = getAgentDead(x);
+            int[] hostagesDmg = getHostagesDmg(x);
+            boolean[] hostageAgentKilled = getHostageAgentKilled(x);
+
+            for (boolean dead : agentDead) {
+                if (dead) {
+                    kills++;
+                }
+            }
+
+            for (boolean dead : hostageAgentKilled) {
+                if (dead) {
+                    kills++;
+                }
+            }
+
+            for (int i = 0; i < hostagesDmg.length; i++) {
+                // if (!hostageAgentKilled[i]) {
+                if (hostagesDmg[i] == 100) {
+                    death++;
+                    // }
+                }
+
+            }
+            while (parent.action != "root") {
+                out = "," + parent.action + out;
+                parent = parent.parent;
+            }
+            out = out.substring(1);
+            // death--;
+            out += ";" + death + ";" + kills + ";" + counter;
+        }
+        return out;
+    }
+
+    public static String AS2(ArrayList<MyTreeNode> queue) {
+        String root = queue.get(0).currentState;
+        HashSet<String> hash = new HashSet<>();
+        int currentHostages;
+        int neoPositionX;
+        int neoPositionY;
+        int telephoneX;
+        int telephoneY;
+        String x = "";
+        MyTreeNode parent;
+        boolean done = false;
+        boolean noSol = false;
+        do {
+            // increment the counter to count the branches of the search
+            counter++;
+            // Comparator<MyTreeNode> employeeNameComparator=
+            // Comparator.comparing(MyTreeNode::getCost);
+            queue.sort(Comparator.comparing(MyTreeNode::getCost));
+            // remove first node from queu
+            parent = queue.remove(0);
+            x = parent.currentState;
+            hash.add(newHash(x));
+            /////////////////////////////////////////////////////////////////////////////////
+            neoPositionX = getNeoX(x);
+            neoPositionY = getNeoY(x);
+            telephoneX = getTelephoneX(x);
+            telephoneY = getTelephoneY(x);
+            currentHostages = getCurrentHostages(x);
+            // System.out.println(currentHostages);
+            int neoDmg = getNeoDmg(x);
+            /////////////////////////////////////////////////////////////////////////////////
+            // up
+            if (neoDmg < 100) {
+                // System.out.println(counter);
+                String newState = up(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("UP: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        int cost = getG2(newState);
+                        cost += getCost(newState);
+                        cost += getCost(x);
+                        MyTreeNode tree = new MyTreeNode(newState, parent, cost, "up");
+                        queue.add(tree);
+
+                    }
+                }
+                // down
+                newState = down(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("Down: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        // System.out.println("Test"+Arrays.toString(getHostagesX(newState))+"vs"+Arrays.toString(getHostagesX(x)));
+                        hash.add(newHash(newState));
+                        int cost = getG1(newState);
+                        cost += getCost(newState);
+                        cost += getCost(x);
+                        MyTreeNode tree = new MyTreeNode(newState, parent, cost, "down");
+                        queue.add(tree);
+
+                    }
+                }
+                // left
+                newState = left(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("LEFT: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        int cost = getG2(newState);
+                        cost += getCost(newState);
+                        cost += getCost(x);
+                        MyTreeNode tree = new MyTreeNode(newState, parent, cost, "left");
+                        queue.add(tree);
+
+                    }
+                }
+                // right
+                newState = right(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("RIGHT: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        int cost = getG2(newState);
+                        cost += getCost(newState);
+                        cost += getCost(x);
+                        MyTreeNode tree = new MyTreeNode(newState, parent, cost, "right");
+                        queue.add(tree);
+
+                    }
+                }
+                // carry
+                newState = carry(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("CARRY: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        int cost = getG2(newState);
+                        cost += getCost(newState);
+                        cost += getCost(x);
+                        MyTreeNode tree = new MyTreeNode(newState, parent, cost, "carry");
+                        queue.add(tree);
+
+                    }
+                }
+                // drop
+                newState = drop(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("DROP: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        int cost = getG2(newState);
+                        cost += getCost(newState);
+                        cost += getCost(x);
+                        MyTreeNode tree = new MyTreeNode(newState, parent, cost, "drop");
+                        queue.add(tree);
+
+                    }
+                }
+                // takepill
+                newState = takePill(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("TAKEPILL: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        int cost = getG2(newState);
+                        cost += getCost(newState);
+                        cost += getCost(x);
+                        MyTreeNode tree = new MyTreeNode(newState, parent, cost, "takePill");
+                        queue.add(tree);
+
+                    }
+                }
+                // fly
+                newState = fly(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("FLY: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        int cost = getG2(newState);
+                        cost += getCost(newState);
+                        cost += getCost(x);
+                        MyTreeNode tree = new MyTreeNode(newState, parent, cost, "fly");
+                        queue.add(tree);
+
+                    }
+                }
+                // kill
+                newState = kill(x, parent);
+                if (newState != null) {
+                    if (!hash.contains(newHash(newState))) {
+                        // System.out.println("KILL: Before : "+ x);
+                        // System.out.println("After: "+newState);
+                        hash.add(newHash(newState));
+                        int cost = getG2(newState);
+                        cost += getCost(newState);
+                        cost += getCost(x);
+                        MyTreeNode tree = new MyTreeNode(newState, parent, cost, "kill");
+                        queue.add(tree);
+
+                    }
+                }
+            }
+            if (currentHostages == 0) {
+                if (neoPositionX == telephoneX && neoPositionY == telephoneY) {
+                    done = true;
+                }
+            }
+            if (!done && queue.size() == 0) {
+                noSol = true;
+            }
+        } while (!done && queue.size() > 0);
+        String out = "";
+        if (noSol) {
+            out = "No Solution";
+        } else {
+            int kills = 0;
+            int death = 0;
+            boolean[] agentDead = getAgentDead(x);
+            int[] hostagesDmg = getHostagesDmg(x);
+            boolean[] hostageAgentKilled = getHostageAgentKilled(x);
+
+            for (boolean dead : agentDead) {
+                if (dead) {
+                    kills++;
+                }
+            }
+
+            for (boolean dead : hostageAgentKilled) {
+                if (dead) {
+                    kills++;
+                }
+            }
+
+            for (int i = 0; i < hostagesDmg.length; i++) {
+                // if (!hostageAgentKilled[i]) {
+                if (hostagesDmg[i] == 100) {
+                    death++;
+                    // }
+                }
+
+            }
+            while (parent.action != "root") {
+                out = "," + parent.action + out;
+                parent = parent.parent;
+            }
+            out = out.substring(1);
+            // death--;
+            out += ";" + death + ";" + kills + ";" + counter;
+        }
+        return out;
+    }
+
     // Change grid to a string to be used
     public static String stringifyGrid(String grid) {
         String[] gridSplit = grid.split(";");
@@ -2796,6 +3265,12 @@ public class Matrix {
                 return (UC(array));
             case "GR1":
                 return (GR1(array));
+            case "GR2":
+                return (GR2(array));
+            case "AS1":
+                return (AS1(array));
+            case "AS2":
+                return (AS2(array));
 
         }
         return "";
