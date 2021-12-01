@@ -2,11 +2,18 @@ package code;
 
 import java.awt.*;
 import java.awt.geom.*;
+import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
+import javax.swing.BoxLayout;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
 
 class MyTableCellRenderer extends JLabel implements TableCellRenderer {
     @Override
@@ -22,9 +29,9 @@ class MyTableCellRenderer extends JLabel implements TableCellRenderer {
             setForeground(Color.MAGENTA);
         } else if (String.valueOf(value).indexOf("Neo") != -1) {
             setForeground(Color.white);
-        }  else if (String.valueOf(value).indexOf("TB") != -1) {
+        } else if (String.valueOf(value).indexOf("TB") != -1) {
             setForeground(Color.BLUE);
-        } 
+        }
         if (String.valueOf(value) != "null") {
             setText(String.valueOf(value));
         } else {
@@ -32,6 +39,8 @@ class MyTableCellRenderer extends JLabel implements TableCellRenderer {
         }
         setFont(new Font("Serif", Font.BOLD, 20));
         setHorizontalAlignment(JLabel.CENTER);
+        setBackground(Color.black);
+
         return this;
     }
 }
@@ -533,7 +542,10 @@ public class visualize extends Canvas {
         return out;
     }
 
-    public visualize(String x) {
+    public int counter = 0;
+
+    public String[][] generateData(String x) {
+
         int gridSizeX = getGridSizeX(x);
         int gridSizeY = getGridSizeY(x);
         int neoPositionX = getNeoX(x);
@@ -560,31 +572,41 @@ public class visualize extends Canvas {
         int carryCount = getCarryCount(x);
         f = new JFrame();
         String data[][] = new String[gridSizeX][gridSizeY];
+        for (String[] row : data)
+            Arrays.fill(row, "");
+        // Arrays.fill(data, ".");
         String column[] = { "hi", "hi", "hi", "hi", "hi" };
-        data[neoPositionX][neoPositionY] = "Neo";
-        data[telephoneX][telephoneY] = "TB";
+        data[neoPositionX][neoPositionY] += "Neo (" + neoDmg + ")";
+        data[telephoneX][telephoneY] += "TB";
 
         for (int i = 0; i < hostagesX.length; i++) {
             if (!hostagesCarried[i])
-                data[hostagesX[i]][hostagesY[i]] = "Hostage(" + hostagesDmg[i] + ") - " + (i + 1);
+                data[hostagesX[i]][hostagesY[i]] += "Hostage(" + hostagesDmg[i] + ") - " + (i + 1);
         }
         for (int i = 0; i < pillsX.length; i++) {
             if (!pillTaken[i])
-                data[pillsX[i]][pillsY[i]] = "Pill(" + (i + 1) + ")";
+                data[pillsX[i]][pillsY[i]] += "Pill(" + (i + 1) + ")";
         }
         for (int i = 0; i < agentsX.length; i++) {
             if (!agentDead[i])
-                data[agentsX[i]][agentsY[i]] = "Agent(" + (i + 1) + ")";
+                data[agentsX[i]][agentsY[i]] += "Agent(" + (i + 1) + ")";
         }
         int c = 1;
         for (int i = 0; i < padsX.length; i += 4) {
-            data[padsX[i]][padsY[i]] = "pad(" + (c) + ")";
-            data[padsX[i + 1]][padsY[i + 1]] = "pad(" + (c) + ")";
+            data[padsX[i]][padsY[i]] += "pad(" + (c) + ")";
+            data[padsX[i + 1]][padsY[i + 1]] += "pad(" + (c) + ")";
 
             c++;
 
         }
+        return data;
+    }
 
+    String[][] data = new String[0][0];
+
+    public visualize(ArrayList<String> z) {
+        String column[] = { "hi", "hi", "hi", "hi", "hi" };
+        data = generateData(z.remove(0));
         JTable jt = new JTable(data, column);
         jt.setTableHeader(null);
         jt.setFont(new Font("Serif", Font.BOLD, 20));
@@ -594,19 +616,48 @@ public class visualize extends Canvas {
         jt.setDefaultRenderer(Object.class, centerRenderer);
 
         // jt.setBounds(0, 0, 1000, 1000);
-        jt.setSize(1000, 1000);
+        jt.setSize(1000, 700);
         f.setBackground(Color.black);
         jt.setRowHeight(jt.getRowHeight() + 100);
-
+        jt.setOpaque(false);
+        Container pane = new Container();
+        ;
         JScrollPane sp = new JScrollPane(jt);
+        sp.getViewport().setBackground(Color.black);
+        JButton b = new JButton("next");
+        b.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String column[] = { "hi", "hi", "hi", "hi", "hi" };
+                data = generateData(z.remove(0));
+                JTable jt2 = new JTable(data, column);
+                jt.setModel(jt2.getModel());
+                f.revalidate();
+                f.repaint();
+                System.out.println(counter);
+            }
+        });
+        b.setBounds(10, 750, 90, 30);
+        // sp.add(b);
+        // f.setLayout(new BoxLayout(pane, BoxLayout.X_AXIS));
+        // sp.add(jt);
+        // sp.add(b);
+        // pane.setvie
+        f.setLayout(new BoxLayout(f.getContentPane(), BoxLayout.Y_AXIS));
         f.add(sp);
+        f.add(b);
+        // f.add(b);
         f.setSize(1000, 1000);
         f.setVisible(true);
+
     }
 
     public static void main(String[] args) {
         String grid1 = "5,5;1;1,4;1,0;0,4;0,0,2,2;3,4,4,2,4,2,3,4;0,2,32,0,1,38";
+        String grid0 = "5,5;2;3,4;1,2;0,3,1,4;2,3;4,4,0,2,0,2,4,4;2,2,91,2,4,62";
+
         String x = stringifyGrid(grid1);
-        new visualize(x);
+        String z = stringifyGrid(grid0);
+        // String[] c = { x, z };
+        // new visualize(c);
     }
 }

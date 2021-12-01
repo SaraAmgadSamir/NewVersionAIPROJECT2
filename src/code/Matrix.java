@@ -1339,7 +1339,7 @@ public class Matrix {
 
     }
 
-    public static String bfs(Queue<MyTreeNode> queue) {
+    public static String bfs(Queue<MyTreeNode> queue, boolean visualize) {
         String root = queue.peek().currentState;
         HashSet<String> hash = new HashSet<>();
         int currentHostages;
@@ -1492,44 +1492,63 @@ public class Matrix {
         if (noSol) {
             out = "No Solution";
         } else {
-            int kills = 0;
-            int death = 0;
-            boolean[] agentDead = getAgentDead(x);
-            int[] hostagesDmg = getHostagesDmg(x);
-            boolean[] hostageAgentKilled = getHostageAgentKilled(x);
+            if (!visualize) {
+                int kills = 0;
+                int death = 0;
+                boolean[] agentDead = getAgentDead(x);
+                int[] hostagesDmg = getHostagesDmg(x);
+                boolean[] hostageAgentKilled = getHostageAgentKilled(x);
 
-            for (boolean dead : agentDead) {
-                if (dead) {
-                    kills++;
-                }
-            }
-
-            for (boolean dead : hostageAgentKilled) {
-                if (dead) {
-                    kills++;
-                }
-            }
-
-            for (int i = 0; i < hostagesDmg.length; i++) {
-                // if (!hostageAgentKilled[i]) {
-                if (hostagesDmg[i] == 100) {
-                    death++;
-                    // }
+                for (boolean dead : agentDead) {
+                    if (dead) {
+                        kills++;
+                    }
                 }
 
+                for (boolean dead : hostageAgentKilled) {
+                    if (dead) {
+                        kills++;
+                    }
+                }
+
+                for (int i = 0; i < hostagesDmg.length; i++) {
+                    // if (!hostageAgentKilled[i]) {
+                    if (hostagesDmg[i] == 100) {
+                        death++;
+                        // }
+                    }
+
+                }
+                while (parent.action != "root") {
+                    out = "," + parent.action + out;
+                    parent = parent.parent;
+                }
+                out = out.substring(1);
+                // death--;
+                out += ";" + death + ";" + kills + ";" + counter;
+
+                return out;
+            } else {
+                ArrayList<String> out2 = new ArrayList<>();
+                // String[] out2=new String[50];
+                // for (int i = 0; i < out2.length; i++) {
+                while (parent != null) {
+                    out2.add(parent.currentState);
+                    parent = parent.parent;
+                    ;
+                }
+                Collections.reverse(out2);
+                new visualize(out2);
+
             }
-            while (parent.action != "root") {
-                out = "," + parent.action + out;
-                parent = parent.parent;
-            }
-            out = out.substring(1);
-            // death--;
-            out += ";" + death + ";" + kills + ";" + counter;
+
+            return "";
         }
+
         return out;
     }
 
-    public static String dfs(Stack<MyTreeNode> queue) {
+    public static String dfs(Stack<MyTreeNode> queue, boolean visualize) {
         String root = queue.peek().currentState;
         HashSet<String> hash = new HashSet<>();
         int currentHostages;
@@ -1682,50 +1701,68 @@ public class Matrix {
         if (noSol) {
             out = "No Solution";
         } else {
-            int kills = 0;
-            int death = 0;
-            boolean[] agentDead = getAgentDead(x);
-            int[] hostagesDmg = getHostagesDmg(x);
-            boolean[] hostageAgentKilled = getHostageAgentKilled(x);
+            if (!visualize) {
+                int kills = 0;
+                int death = 0;
+                boolean[] agentDead = getAgentDead(x);
+                int[] hostagesDmg = getHostagesDmg(x);
+                boolean[] hostageAgentKilled = getHostageAgentKilled(x);
 
-            for (boolean dead : agentDead) {
-                if (dead) {
-                    kills++;
-                }
-            }
-
-            for (boolean dead : hostageAgentKilled) {
-                if (dead) {
-                    kills++;
-                }
-            }
-
-            for (int i = 0; i < hostagesDmg.length; i++) {
-                // if (!hostageAgentKilled[i]) {
-                if (hostagesDmg[i] == 100) {
-                    death++;
-                    // }
+                for (boolean dead : agentDead) {
+                    if (dead) {
+                        kills++;
+                    }
                 }
 
+                for (boolean dead : hostageAgentKilled) {
+                    if (dead) {
+                        kills++;
+                    }
+                }
+
+                for (int i = 0; i < hostagesDmg.length; i++) {
+                    // if (!hostageAgentKilled[i]) {
+                    if (hostagesDmg[i] == 100) {
+                        death++;
+                        // }
+                    }
+
+                }
+                while (parent.action != "root") {
+                    out = "," + parent.action + out;
+                    parent = parent.parent;
+                }
+                out = out.substring(1);
+                // death--;
+                out += ";" + death + ";" + kills + ";" + counter;
+            } else {
+                ArrayList<String> out2 = new ArrayList<>();
+                // String[] out2=new String[50];
+                // for (int i = 0; i < out2.length; i++) {
+                while (parent != null) {
+                    out2.add(parent.currentState);
+                    parent = parent.parent;
+                    ;
+                }
+                Collections.reverse(out2);
+                new visualize(out2);
+
             }
-            while (parent.action != "root") {
-                out = "," + parent.action + out;
-                parent = parent.parent;
-            }
-            out = out.substring(1);
-            // death--;
-            out += ";" + death + ";" + kills + ";" + counter;
+
+            return "";
         }
-        return out;
+
+        return "out";
+
     }
 
-    public static String ID(Stack<MyTreeNode> queue) {
+    public static String ID(Stack<MyTreeNode> queue, boolean visualize) {
         int maxDepth = 0;
         String done = "No Solution";
         MyTreeNode root = queue.peek();
 
         while (done.equals("No Solution")) {
-            done = IDBranching(queue, maxDepth);
+            done = IDBranching(queue, maxDepth, visualize);
             maxDepth++;
             queue = new Stack<MyTreeNode>();
             queue.add(root);
@@ -1733,7 +1770,7 @@ public class Matrix {
         return done;
     }
 
-    public static String IDBranching(Stack<MyTreeNode> queue, int maxDepth) {
+    public static String IDBranching(Stack<MyTreeNode> queue, int maxDepth, boolean visualize) {
         int counter = 0;
         MyTreeNode parent;
         HashSet<String> hash = new HashSet<>();
@@ -1760,37 +1797,53 @@ public class Matrix {
                 }
             }
             if (done) {
-                int kills = 0;
-                int death = 0;
-                boolean[] agentDead = getAgentDead(x);
-                int[] hostagesDmg = getHostagesDmg(x);
-                boolean[] hostageAgentKilled = getHostageAgentKilled(x);
+                if (!visualize) {
+                    int kills = 0;
+                    int death = 0;
+                    boolean[] agentDead = getAgentDead(x);
+                    int[] hostagesDmg = getHostagesDmg(x);
+                    boolean[] hostageAgentKilled = getHostageAgentKilled(x);
 
-                for (boolean dead : agentDead) {
-                    if (dead) {
-                        kills++;
-                    }
-                }
-
-                for (boolean dead : hostageAgentKilled) {
-                    if (dead) {
-                        kills++;
-                    }
-                }
-
-                for (int i = 0; i < hostagesDmg.length; i++) {
-                    if (hostagesDmg[i] == 100) {
-                        death++;
+                    for (boolean dead : agentDead) {
+                        if (dead) {
+                            kills++;
+                        }
                     }
 
+                    for (boolean dead : hostageAgentKilled) {
+                        if (dead) {
+                            kills++;
+                        }
+                    }
+
+                    for (int i = 0; i < hostagesDmg.length; i++) {
+                        if (hostagesDmg[i] == 100) {
+                            death++;
+                        }
+
+                    }
+                    while (parent.action != "root") {
+                        out = "," + parent.action + out;
+                        parent = parent.parent;
+                    }
+                    out = out.substring(1);
+                    out += ";" + death + ";" + kills + ";" + counter;
+                    return out;
+                } else {
+                    ArrayList<String> out2 = new ArrayList<>();
+                    // String[] out2=new String[50];
+                    // for (int i = 0; i < out2.length; i++) {
+                    while (parent != null) {
+                        out2.add(parent.currentState);
+                        parent = parent.parent;
+                        ;
+                    }
+                    Collections.reverse(out2);
+                    new visualize(out2);
+                    return "";
+
                 }
-                while (parent.action != "root") {
-                    out = "," + parent.action + out;
-                    parent = parent.parent;
-                }
-                out = out.substring(1);
-                out += ";" + death + ";" + kills + ";" + counter;
-                return out;
+
             }
             if (parent.depth < maxDepth) {
                 // If entered here, then, we can branch more
@@ -2114,7 +2167,7 @@ public class Matrix {
         return deaths + kills;
     }
 
-    public static String UC(ArrayList<MyTreeNode> queue) {
+    public static String UC(ArrayList<MyTreeNode> queue, boolean visualize) {
         String root = queue.get(0).currentState;
         HashSet<String> hash = new HashSet<>();
         int currentHostages;
@@ -2280,44 +2333,62 @@ public class Matrix {
         if (noSol) {
             out = "No Solution";
         } else {
-            int kills = 0;
-            int death = 0;
-            boolean[] agentDead = getAgentDead(x);
-            int[] hostagesDmg = getHostagesDmg(x);
-            boolean[] hostageAgentKilled = getHostageAgentKilled(x);
+            if (!visualize) {
+                int kills = 0;
+                int death = 0;
+                boolean[] agentDead = getAgentDead(x);
+                int[] hostagesDmg = getHostagesDmg(x);
+                boolean[] hostageAgentKilled = getHostageAgentKilled(x);
 
-            for (boolean dead : agentDead) {
-                if (dead) {
-                    kills++;
-                }
-            }
-
-            for (boolean dead : hostageAgentKilled) {
-                if (dead) {
-                    kills++;
-                }
-            }
-
-            for (int i = 0; i < hostagesDmg.length; i++) {
-                // if (!hostageAgentKilled[i]) {
-                if (hostagesDmg[i] == 100) {
-                    death++;
-                    // }
+                for (boolean dead : agentDead) {
+                    if (dead) {
+                        kills++;
+                    }
                 }
 
+                for (boolean dead : hostageAgentKilled) {
+                    if (dead) {
+                        kills++;
+                    }
+                }
+
+                for (int i = 0; i < hostagesDmg.length; i++) {
+                    // if (!hostageAgentKilled[i]) {
+                    if (hostagesDmg[i] == 100) {
+                        death++;
+                        // }
+                    }
+
+                }
+                while (parent.action != "root") {
+                    out = "," + parent.action + out;
+                    parent = parent.parent;
+                }
+                out = out.substring(1);
+                // death--;
+                out += ";" + death + ";" + kills + ";" + counter;
+            } else {
+                ArrayList<String> out2 = new ArrayList<>();
+                // String[] out2=new String[50];
+                // for (int i = 0; i < out2.length; i++) {
+                while (parent != null) {
+                    out2.add(parent.currentState);
+                    parent = parent.parent;
+                    ;
+                }
+                Collections.reverse(out2);
+                new visualize(out2);
+
             }
-            while (parent.action != "root") {
-                out = "," + parent.action + out;
-                parent = parent.parent;
-            }
-            out = out.substring(1);
-            // death--;
-            out += ";" + death + ";" + kills + ";" + counter;
+
+            return "";
         }
-        return out;
+
+        return "out";
+
     }
 
-    public static String GR1(ArrayList<MyTreeNode> queue) {
+    public static String GR1(ArrayList<MyTreeNode> queue, boolean visualize) {
         String root = queue.get(0).currentState;
         HashSet<String> hash = new HashSet<>();
         int currentHostages;
@@ -2483,44 +2554,62 @@ public class Matrix {
         if (noSol) {
             out = "No Solution";
         } else {
-            int kills = 0;
-            int death = 0;
-            boolean[] agentDead = getAgentDead(x);
-            int[] hostagesDmg = getHostagesDmg(x);
-            boolean[] hostageAgentKilled = getHostageAgentKilled(x);
+            if (!visualize) {
+                int kills = 0;
+                int death = 0;
+                boolean[] agentDead = getAgentDead(x);
+                int[] hostagesDmg = getHostagesDmg(x);
+                boolean[] hostageAgentKilled = getHostageAgentKilled(x);
 
-            for (boolean dead : agentDead) {
-                if (dead) {
-                    kills++;
-                }
-            }
-
-            for (boolean dead : hostageAgentKilled) {
-                if (dead) {
-                    kills++;
-                }
-            }
-
-            for (int i = 0; i < hostagesDmg.length; i++) {
-                // if (!hostageAgentKilled[i]) {
-                if (hostagesDmg[i] == 100) {
-                    death++;
-                    // }
+                for (boolean dead : agentDead) {
+                    if (dead) {
+                        kills++;
+                    }
                 }
 
+                for (boolean dead : hostageAgentKilled) {
+                    if (dead) {
+                        kills++;
+                    }
+                }
+
+                for (int i = 0; i < hostagesDmg.length; i++) {
+                    // if (!hostageAgentKilled[i]) {
+                    if (hostagesDmg[i] == 100) {
+                        death++;
+                        // }
+                    }
+
+                }
+                while (parent.action != "root") {
+                    out = "," + parent.action + out;
+                    parent = parent.parent;
+                }
+                out = out.substring(1);
+                // death--;
+                out += ";" + death + ";" + kills + ";" + counter;
+            } else {
+                ArrayList<String> out2 = new ArrayList<>();
+                // String[] out2=new String[50];
+                // for (int i = 0; i < out2.length; i++) {
+                while (parent != null) {
+                    out2.add(parent.currentState);
+                    parent = parent.parent;
+                    ;
+                }
+                Collections.reverse(out2);
+                new visualize(out2);
+
             }
-            while (parent.action != "root") {
-                out = "," + parent.action + out;
-                parent = parent.parent;
-            }
-            out = out.substring(1);
-            // death--;
-            out += ";" + death + ";" + kills + ";" + counter;
+
+            return "";
         }
-        return out;
+
+        return "out";
+
     }
 
-    public static String GR2(ArrayList<MyTreeNode> queue) {
+    public static String GR2(ArrayList<MyTreeNode> queue, boolean visualize) {
         String root = queue.get(0).currentState;
         HashSet<String> hash = new HashSet<>();
         int currentHostages;
@@ -2686,44 +2775,62 @@ public class Matrix {
         if (noSol) {
             out = "No Solution";
         } else {
-            int kills = 0;
-            int death = 0;
-            boolean[] agentDead = getAgentDead(x);
-            int[] hostagesDmg = getHostagesDmg(x);
-            boolean[] hostageAgentKilled = getHostageAgentKilled(x);
+            if (!visualize) {
+                int kills = 0;
+                int death = 0;
+                boolean[] agentDead = getAgentDead(x);
+                int[] hostagesDmg = getHostagesDmg(x);
+                boolean[] hostageAgentKilled = getHostageAgentKilled(x);
 
-            for (boolean dead : agentDead) {
-                if (dead) {
-                    kills++;
-                }
-            }
-
-            for (boolean dead : hostageAgentKilled) {
-                if (dead) {
-                    kills++;
-                }
-            }
-
-            for (int i = 0; i < hostagesDmg.length; i++) {
-                // if (!hostageAgentKilled[i]) {
-                if (hostagesDmg[i] == 100) {
-                    death++;
-                    // }
+                for (boolean dead : agentDead) {
+                    if (dead) {
+                        kills++;
+                    }
                 }
 
+                for (boolean dead : hostageAgentKilled) {
+                    if (dead) {
+                        kills++;
+                    }
+                }
+
+                for (int i = 0; i < hostagesDmg.length; i++) {
+                    // if (!hostageAgentKilled[i]) {
+                    if (hostagesDmg[i] == 100) {
+                        death++;
+                        // }
+                    }
+
+                }
+                while (parent.action != "root") {
+                    out = "," + parent.action + out;
+                    parent = parent.parent;
+                }
+                out = out.substring(1);
+                // death--;
+                out += ";" + death + ";" + kills + ";" + counter;
+            } else {
+                ArrayList<String> out2 = new ArrayList<>();
+                // String[] out2=new String[50];
+                // for (int i = 0; i < out2.length; i++) {
+                while (parent != null) {
+                    out2.add(parent.currentState);
+                    parent = parent.parent;
+                    ;
+                }
+                Collections.reverse(out2);
+                new visualize(out2);
+
             }
-            while (parent.action != "root") {
-                out = "," + parent.action + out;
-                parent = parent.parent;
-            }
-            out = out.substring(1);
-            // death--;
-            out += ";" + death + ";" + kills + ";" + counter;
+
+            return "";
         }
-        return out;
+
+        return "out";
+
     }
 
-    public static String AS1(ArrayList<MyTreeNode> queue) {
+    public static String AS1(ArrayList<MyTreeNode> queue, boolean visualize) {
         String root = queue.get(0).currentState;
         HashSet<String> hash = new HashSet<>();
         int currentHostages;
@@ -2906,44 +3013,62 @@ public class Matrix {
         if (noSol) {
             out = "No Solution";
         } else {
-            int kills = 0;
-            int death = 0;
-            boolean[] agentDead = getAgentDead(x);
-            int[] hostagesDmg = getHostagesDmg(x);
-            boolean[] hostageAgentKilled = getHostageAgentKilled(x);
+            if (!visualize) {
+                int kills = 0;
+                int death = 0;
+                boolean[] agentDead = getAgentDead(x);
+                int[] hostagesDmg = getHostagesDmg(x);
+                boolean[] hostageAgentKilled = getHostageAgentKilled(x);
 
-            for (boolean dead : agentDead) {
-                if (dead) {
-                    kills++;
-                }
-            }
-
-            for (boolean dead : hostageAgentKilled) {
-                if (dead) {
-                    kills++;
-                }
-            }
-
-            for (int i = 0; i < hostagesDmg.length; i++) {
-                // if (!hostageAgentKilled[i]) {
-                if (hostagesDmg[i] == 100) {
-                    death++;
-                    // }
+                for (boolean dead : agentDead) {
+                    if (dead) {
+                        kills++;
+                    }
                 }
 
+                for (boolean dead : hostageAgentKilled) {
+                    if (dead) {
+                        kills++;
+                    }
+                }
+
+                for (int i = 0; i < hostagesDmg.length; i++) {
+                    // if (!hostageAgentKilled[i]) {
+                    if (hostagesDmg[i] == 100) {
+                        death++;
+                        // }
+                    }
+
+                }
+                while (parent.action != "root") {
+                    out = "," + parent.action + out;
+                    parent = parent.parent;
+                }
+                out = out.substring(1);
+                // death--;
+                out += ";" + death + ";" + kills + ";" + counter;
+            } else {
+                ArrayList<String> out2 = new ArrayList<>();
+                // String[] out2=new String[50];
+                // for (int i = 0; i < out2.length; i++) {
+                while (parent != null) {
+                    out2.add(parent.currentState);
+                    parent = parent.parent;
+                    ;
+                }
+                Collections.reverse(out2);
+                new visualize(out2);
+
             }
-            while (parent.action != "root") {
-                out = "," + parent.action + out;
-                parent = parent.parent;
-            }
-            out = out.substring(1);
-            // death--;
-            out += ";" + death + ";" + kills + ";" + counter;
+
+            return "";
         }
-        return out;
+
+        return "out";
+
     }
 
-    public static String AS2(ArrayList<MyTreeNode> queue) {
+    public static String AS2(ArrayList<MyTreeNode> queue, boolean visualize) {
         String root = queue.get(0).currentState;
         HashSet<String> hash = new HashSet<>();
         int currentHostages;
@@ -3126,41 +3251,59 @@ public class Matrix {
         if (noSol) {
             out = "No Solution";
         } else {
-            int kills = 0;
-            int death = 0;
-            boolean[] agentDead = getAgentDead(x);
-            int[] hostagesDmg = getHostagesDmg(x);
-            boolean[] hostageAgentKilled = getHostageAgentKilled(x);
+            if (!visualize) {
+                int kills = 0;
+                int death = 0;
+                boolean[] agentDead = getAgentDead(x);
+                int[] hostagesDmg = getHostagesDmg(x);
+                boolean[] hostageAgentKilled = getHostageAgentKilled(x);
 
-            for (boolean dead : agentDead) {
-                if (dead) {
-                    kills++;
-                }
-            }
-
-            for (boolean dead : hostageAgentKilled) {
-                if (dead) {
-                    kills++;
-                }
-            }
-
-            for (int i = 0; i < hostagesDmg.length; i++) {
-                // if (!hostageAgentKilled[i]) {
-                if (hostagesDmg[i] == 100) {
-                    death++;
-                    // }
+                for (boolean dead : agentDead) {
+                    if (dead) {
+                        kills++;
+                    }
                 }
 
+                for (boolean dead : hostageAgentKilled) {
+                    if (dead) {
+                        kills++;
+                    }
+                }
+
+                for (int i = 0; i < hostagesDmg.length; i++) {
+                    // if (!hostageAgentKilled[i]) {
+                    if (hostagesDmg[i] == 100) {
+                        death++;
+                        // }
+                    }
+
+                }
+                while (parent.action != "root") {
+                    out = "," + parent.action + out;
+                    parent = parent.parent;
+                }
+                out = out.substring(1);
+                // death--;
+                out += ";" + death + ";" + kills + ";" + counter;
+            } else {
+                ArrayList<String> out2 = new ArrayList<>();
+                // String[] out2=new String[50];
+                // for (int i = 0; i < out2.length; i++) {
+                while (parent != null) {
+                    out2.add(parent.currentState);
+                    parent = parent.parent;
+                    ;
+                }
+                Collections.reverse(out2);
+                new visualize(out2);
+
             }
-            while (parent.action != "root") {
-                out = "," + parent.action + out;
-                parent = parent.parent;
-            }
-            out = out.substring(1);
-            // death--;
-            out += ";" + death + ";" + kills + ";" + counter;
+
+            return "";
         }
-        return out;
+
+        return "out";
+
     }
 
     // Change grid to a string to be used
@@ -3256,21 +3399,21 @@ public class Matrix {
 
         switch (strategy) {
             case "BF":
-                return (bfs(queue));
+                return (bfs(queue, visualize));
             case "DF":
-                return (dfs(stack));
+                return (dfs(stack, visualize));
             case "ID":
-                return (ID(stackID));
+                return (ID(stackID, visualize));
             case "UC":
-                return (UC(array));
+                return (UC(array, visualize));
             case "GR1":
-                return (GR1(array));
+                return (GR1(array, visualize));
             case "GR2":
-                return (GR2(array));
+                return (GR2(array, visualize));
             case "AS1":
-                return (AS1(array));
+                return (AS1(array, visualize));
             case "AS2":
-                return (AS2(array));
+                return (AS2(array, visualize));
 
         }
         return "";
@@ -3291,7 +3434,7 @@ public class Matrix {
 
         // solve(grid1, "BFS", false);
         // System.out.println("hi");
-        String out = solve(grid6, "ID", false);
+        String out = solve(grid6, "ID", true);
         System.out.println(out);
 
         // }
