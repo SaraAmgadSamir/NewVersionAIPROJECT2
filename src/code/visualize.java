@@ -580,8 +580,12 @@ public class visualize extends Canvas {
         data[telephoneX][telephoneY] += "TB";
 
         for (int i = 0; i < hostagesX.length; i++) {
-            if (!hostagesCarried[i])
+            if (!hostagesCarried[i] && !hostageAgent[i])
                 data[hostagesX[i]][hostagesY[i]] += "Hostage(" + hostagesDmg[i] + ") - " + (i + 1);
+        }
+        for (int i = 0; i < hostagesX.length; i++) {
+            if (hostageAgent[i] && !hostageAgentKilled[i])
+                data[hostagesX[i]][hostagesY[i]] += "Hostage Agent - "+ (i + 1);
         }
         for (int i = 0; i < pillsX.length; i++) {
             if (!pillTaken[i])
@@ -633,7 +637,6 @@ public class visualize extends Canvas {
                 jt.setModel(jt2.getModel());
                 f.revalidate();
                 f.repaint();
-                System.out.println(counter);
             }
         });
         b.setBounds(10, 750, 90, 30);

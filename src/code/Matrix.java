@@ -3434,7 +3434,7 @@ public class Matrix {
 
         // solve(grid1, "BFS", false);
         // System.out.println("hi");
-        String out = solve(grid6, "ID", true);
+        String out = solve(grid5, "BF", true);
         System.out.println(out);
 
         // }
