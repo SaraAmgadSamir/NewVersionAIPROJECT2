@@ -1735,6 +1735,7 @@ public class Matrix {
                 out = out.substring(1);
                 // death--;
                 out += ";" + death + ";" + kills + ";" + counter;
+                return out;
             } else {
                 ArrayList<String> out2 = new ArrayList<>();
                 // String[] out2=new String[50];
@@ -3434,7 +3435,7 @@ public class Matrix {
 
         // solve(grid1, "BFS", false);
         // System.out.println("hi");
-        String out = solve(grid5, "BF", true);
+        String out = solve(grid5, "DF", false);
         System.out.println(out);
 
         // }
