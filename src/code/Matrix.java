@@ -1753,7 +1753,7 @@ public class Matrix {
             return "";
         }
 
-        return "out";
+        return out;
 
     }
 
@@ -1799,6 +1799,7 @@ public class Matrix {
             }
             if (done) {
                 if (!visualize) {
+
                     int kills = 0;
                     int death = 0;
                     boolean[] agentDead = getAgentDead(x);
@@ -1841,7 +1842,7 @@ public class Matrix {
                     }
                     Collections.reverse(out2);
                     new visualize(out2);
-                    return "";
+                    return out;
 
                 }
 
@@ -2368,6 +2369,8 @@ public class Matrix {
                 out = out.substring(1);
                 // death--;
                 out += ";" + death + ";" + kills + ";" + counter;
+                return out;
+
             } else {
                 ArrayList<String> out2 = new ArrayList<>();
                 // String[] out2=new String[50];
@@ -2382,10 +2385,10 @@ public class Matrix {
 
             }
 
-            return "";
+            return out;
         }
 
-        return "out";
+        return out;
 
     }
 
@@ -2589,6 +2592,8 @@ public class Matrix {
                 out = out.substring(1);
                 // death--;
                 out += ";" + death + ";" + kills + ";" + counter;
+                return out;
+
             } else {
                 ArrayList<String> out2 = new ArrayList<>();
                 // String[] out2=new String[50];
@@ -2603,11 +2608,10 @@ public class Matrix {
 
             }
 
-            return "";
+            return out;
         }
 
-        return "out";
-
+        return out;
     }
 
     public static String GR2(ArrayList<MyTreeNode> queue, boolean visualize) {
@@ -2810,6 +2814,8 @@ public class Matrix {
                 out = out.substring(1);
                 // death--;
                 out += ";" + death + ";" + kills + ";" + counter;
+                return out;
+
             } else {
                 ArrayList<String> out2 = new ArrayList<>();
                 // String[] out2=new String[50];
@@ -2824,11 +2830,10 @@ public class Matrix {
 
             }
 
-            return "";
+            return out;
         }
 
-        return "out";
-
+        return out;
     }
 
     public static String AS1(ArrayList<MyTreeNode> queue, boolean visualize) {
@@ -3048,6 +3053,8 @@ public class Matrix {
                 out = out.substring(1);
                 // death--;
                 out += ";" + death + ";" + kills + ";" + counter;
+                return out;
+
             } else {
                 ArrayList<String> out2 = new ArrayList<>();
                 // String[] out2=new String[50];
@@ -3062,11 +3069,10 @@ public class Matrix {
 
             }
 
-            return "";
+            return out;
         }
 
-        return "out";
-
+        return out;
     }
 
     public static String AS2(ArrayList<MyTreeNode> queue, boolean visualize) {
@@ -3286,6 +3292,8 @@ public class Matrix {
                 out = out.substring(1);
                 // death--;
                 out += ";" + death + ";" + kills + ";" + counter;
+                return out;
+
             } else {
                 ArrayList<String> out2 = new ArrayList<>();
                 // String[] out2=new String[50];
@@ -3300,11 +3308,10 @@ public class Matrix {
 
             }
 
-            return "";
+            return out;
         }
 
-        return "out";
-
+        return out;
     }
 
     // Change grid to a string to be used
